@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: 'Creepster', cursive;
+  --font-typewriter: 'Special Elite', cursive;
+  --font-body: 'Inter', sans-serif;
+  --color-primary: #FBBF24;
+  --color-primary-dark: #D97706;
+  --color-primary-light: #FDE68A;
+  --color-burnt: #92400E;
+  --color-burnt-dark: #451a03;
+  --color-surface: #1a1a2e;
+  --color-surface-light: #242444;
+  --color-surface-border: #2a2a4e;
+  --color-cream: #FFF8E1;
+  --color-danger: #EF4444;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #FBBF24 #1a1a2e;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #0a0a12;
+  color: #FFF8E1;
+  min-height: 100vh;
+}
+
+.font-heading {
+  font-family: 'Creepster', cursive;
+}
+
+.font-typewriter {
+  font-family: 'Special Elite', cursive;
+}
+
+/* Burnt Frame Effect */
+.burnt-frame {
+  position: relative;
+  background: linear-gradient(135deg, #2a1508, #4a2510, #3a1a0a, #2a1508);
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow:
+    0 0 15px rgba(139, 69, 19, 0.6),
+    0 0 30px rgba(139, 69, 19, 0.3),
+    inset 0 0 20px rgba(0, 0, 0, 0.8),
+    0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.burnt-frame::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(
+    45deg,
+    #1a0e08 0%, #5a3018 15%, #1a0e08 30%,
+    #4a2812 45%, #2a1508 60%, #6a3820 75%,
+    #1a0e08 90%, #3a1a0a 100%
+  );
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.burnt-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 10% 10%, rgba(200, 100, 20, 0.2), transparent 40%),
+    radial-gradient(ellipse at 90% 90%, rgba(200, 100, 20, 0.2), transparent 40%),
+    radial-gradient(ellipse at 90% 10%, rgba(0, 0, 0, 0.4), transparent 50%),
+    radial-gradient(ellipse at 10% 90%, rgba(0, 0, 0, 0.4), transparent 50%);
+}
+
+.burnt-frame img {
+  filter: sepia(20%) contrast(110%) brightness(95%);
+  border-radius: 4px;
+}
+
+/* Glow text effect */
+.text-glow {
+  text-shadow: 0 0 20px rgba(251, 191, 36, 0.5), 0 0 40px rgba(251, 191, 36, 0.2);
+}
+
+.text-glow-sm {
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15);
+}
+
+/* Search bar glow */
+.search-glow:focus-within {
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3), 0 0 40px rgba(251, 191, 36, 0.1);
+}
+
+/* Rating bar animation */
+.rating-bar-fill {
+  transition: width 0.8s ease-out;
+}
+
+/* Wanted poster style */
+.wanted-poster {
+  background: linear-gradient(180deg, #2a2015 0%, #1a1510 50%, #2a2015 100%);
+  border: 2px solid #4a3520;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.5),
+    0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Pulsing fire effect */
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-flicker {
+  animation: flicker 2s ease-in-out infinite;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1a1a2e;
+}
+::-webkit-scrollbar-thumb {
+  background: #FBBF24;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D97706;
+}
+
+/* Star rating hover effect */
+.star-input:hover .star-icon {
+  transition: color 0.15s ease;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  backdrop-filter: blur(4px);
+}
+
+/* Tag style */
+.tag-badge {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15), rgba(217, 119, 6, 0.15));
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  transition: all 0.2s ease;
+}
+.tag-badge:hover {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(217, 119, 6, 0.25));
+  border-color: rgba(251, 191, 36, 0.5);
+}
+
+/* Leaderboard position styles */
+.leaderboard-gold { border-left: 4px solid #FFD700; }
+.leaderboard-silver { border-left: 4px solid #C0C0C0; }
+.leaderboard-bronze { border-left: 4px solid #CD7F32; }
