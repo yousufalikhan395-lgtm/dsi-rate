@@ -657,7 +657,7 @@ function HomePage() {
             <section className="max-w-6xl mx-auto px-4 pb-12">
               <div className="flex items-center gap-3 mb-6">
                 <Award className="w-6 h-6 text-primary" />
-                <h2 className="font-heading text-2xl text-primary text-glow-sm">Top Rated Professors</h2>
+                <h2 className="font-heading text-2xl text-primary text-glow-sm">Recently Rated Professors</h2>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {featured.map(({ prof }) => (
@@ -1050,7 +1050,7 @@ function LeaderboardsPage() {
 
     return [
       {
-        title: 'Top Rated Professors',
+        title: 'Recently Rated Professors',
         emoji: '🏆',
         items: withReviews
           .map(p => ({ prof: p.prof, value: getOverallAvg(p.revs), reviewCount: p.count }))

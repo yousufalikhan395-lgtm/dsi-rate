@@ -29,7 +29,8 @@ body {
 }
 
 .font-heading {
-  font-family: 'Creepster', cursive;
+  font-family: Poppins;
+  font-weight: bold;
 }
 
 .font-typewriter {
