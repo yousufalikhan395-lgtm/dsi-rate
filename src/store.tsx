@@ -45,6 +45,11 @@ function getReviewCooldownHours(): number {
   return loadJSON('dsi_review_cooldown_hours', 336); // default 14 days = 336 hours
 }
 
+// ---- Disclaimer timer helper ----
+function getDisclaimerTimerSeconds(): number {
+  return loadJSON('dsi_disclaimer_timer_seconds', 3); // default 3 seconds
+}
+
 // ---- AI helpers ----
 async function callLLM(prompt: string): Promise<string> {
   try {
@@ -105,6 +110,7 @@ interface AppState {
   loading: boolean;
   isAdminAuthenticated: boolean;
   reviewCooldownHours: number;
+  disclaimerTimerSeconds: number;
   navigate: (page: Page, professorId?: string | null) => void;
   setSearchQuery: (query: string) => void;
   addReview: (review: Omit<Review, 'id' | 'createdAt' | 'helpful' | 'notHelpful' | 'hidden' | 'userId'>) => void;
@@ -122,6 +128,7 @@ interface AppState {
   logoutAdmin: () => void;
   canReviewProfessor: (professorId: string) => { allowed: boolean; remainingHours: number };
   setReviewCooldownHours: (hours: number) => void;
+  setDisclaimerTimerSeconds: (seconds: number) => void;
 }
 
 const AppContext = createContext<AppState | null>(null);
@@ -344,6 +351,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const [reviewCooldownHours, setReviewCooldownHoursState] = useState<number>(() => getReviewCooldownHours());
 
+  const [disclaimerTimerSeconds, setDisclaimerTimerSecondsState] = useState<number>(() => getDisclaimerTimerSeconds());
+
   const canReviewProfessor = useCallback((professorId: string) => {
     const userId = getUserId();
     const cooldownHours = reviewCooldownHours;
@@ -367,13 +376,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     saveJSON('dsi_review_cooldown_hours', hours);
   }, []);
 
+  const setDisclaimerTimerSeconds = useCallback((seconds: number) => {
+    setDisclaimerTimerSecondsState(seconds);
+    saveJSON('dsi_disclaimer_timer_seconds', seconds);
+  }, []);
+
   return (
     <AppContext.Provider value={{
       page, selectedProfessorId, searchQuery, professors, reviews, requests, summaries, departments, votedReviews,
-      supabaseConnected: SUPABASE_READY, loading, isAdminAuthenticated, reviewCooldownHours,
+      supabaseConnected: SUPABASE_READY, loading, isAdminAuthenticated, reviewCooldownHours, disclaimerTimerSeconds,
       navigate, setSearchQuery, addReview, voteReview, addRequest, approveRequest, rejectRequest,
       deleteReview, restoreReview, updateSummary, addDepartment, removeDepartment, deleteProfessor,
-      loginAdmin, logoutAdmin, canReviewProfessor, setReviewCooldownHours
+      loginAdmin, logoutAdmin, canReviewProfessor, setReviewCooldownHours, setDisclaimerTimerSeconds
     }}>
       {children}
     </AppContext.Provider>

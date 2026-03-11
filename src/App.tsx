@@ -151,6 +151,66 @@ function Modal({ isOpen, onClose, title, children }: { isOpen: boolean; onClose:
   );
 }
 
+function DisclaimerPopup({ timerSeconds, onClose }: { timerSeconds: number; onClose: () => void }) {
+  const [countdown, setCountdown] = useState(timerSeconds);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
+
+  const isEnabled = countdown === 0;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center modal-overlay bg-black/70 backdrop-blur-sm">
+      <div className="bg-surface border-2 border-primary/30 rounded-xl w-full max-w-md mx-4 animate-slideUp shadow-2xl">
+        <div className="p-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <Flame className="w-8 h-8 text-primary animate-flicker" />
+            <h2 className="font-heading text-2xl text-primary text-glow">ANONYMOUS ZONE</h2>
+            <Flame className="w-8 h-8 text-primary animate-flicker" />
+          </div>
+
+          <div className="space-y-4 mb-8">
+            <p className="text-gray-300 font-typewriter leading-relaxed">
+              Everything you do here is going to stay <span className="text-primary font-bold">anonymous</span>, 
+              so please feel free to leave any sort of reviews.
+            </p>
+            
+            <p className="text-xl font-bold text-primary text-glow font-heading">
+              YOU ARE ANONYMOUS HERE
+            </p>
+
+            <p className="text-sm text-gray-400 font-typewriter italic">
+              Speak freely. Stay hidden. Your identity is protected. 🔥
+            </p>
+          </div>
+
+          <button
+            onClick={onClose}
+            disabled={!isEnabled}
+            className={`w-full py-4 rounded-lg font-bold text-lg transition-all ${
+              isEnabled
+                ? 'bg-primary text-black hover:bg-primary-dark cursor-pointer'
+                : 'bg-gray-700 text-gray-500 cursor-not-allowed'
+            }`}
+          >
+            {isEnabled ? (
+              <span className="flex items-center justify-center gap-2">
+                GO AHEAD <Check className="w-5 h-5" />
+              </span>
+            ) : (
+              <span>GO AHEAD ({countdown}s)</span>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ============================
    PROFESSOR CARD
    ============================ */
@@ -1408,13 +1468,14 @@ function AdminPage() {
     professors, reviews, requests, summaries, departments,
     approveRequest, rejectRequest, updateSummary,
     addDepartment, removeDepartment, deleteProfessor, supabaseConnected,
-    reviewCooldownHours, setReviewCooldownHours
+    reviewCooldownHours, setReviewCooldownHours, disclaimerTimerSeconds, setDisclaimerTimerSeconds
   } = useApp();
   const [activeTab, setActiveTab] = useState<'requests' | 'reviews' | 'professors' | 'departments' | 'settings'>('requests');
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [newDept, setNewDept] = useState('');
   const [confirmDeleteProf, setConfirmDeleteProf] = useState<string | null>(null);
   const [cooldownInput, setCooldownInput] = useState(reviewCooldownHours.toString());
+  const [timerInput, setTimerInput] = useState(disclaimerTimerSeconds.toString());
 
   const tabs = [
     { id: 'requests' as const, label: 'Requests', icon: <FileQuestion className="w-4 h-4" />, count: requests.filter(r => r.status === 'pending').length },
@@ -1428,6 +1489,13 @@ function AdminPage() {
     const hours = parseInt(cooldownInput);
     if (!isNaN(hours) && hours >= 0) {
       setReviewCooldownHours(hours);
+    }
+  };
+
+  const handleSaveTimer = () => {
+    const seconds = parseInt(timerInput);
+    if (!isNaN(seconds) && seconds >= 0 && seconds <= 10) {
+      setDisclaimerTimerSeconds(seconds);
     }
   };
 
@@ -1785,6 +1853,53 @@ function AdminPage() {
               </div>
             </div>
           </div>
+
+          <div className="bg-surface border border-surface-border rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-cream mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-primary" />
+              Disclaimer Timer Settings
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Set how long users must wait before they can dismiss the disclaimer popup.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex-1 w-full">
+                <label className="text-sm text-gray-300 mb-1 block">Timer Duration (seconds)</label>
+                <input
+                  type="number"
+                  value={timerInput}
+                  onChange={(e) => setTimerInput(e.target.value)}
+                  min="0"
+                  max="10"
+                  className="w-full px-3 py-2 bg-gray-900 border border-surface-border rounded-lg text-cream text-sm focus:outline-none focus:border-primary"
+                />
+              </div>
+              <button
+                onClick={handleSaveTimer}
+                className="px-4 py-2 bg-primary text-black font-bold rounded-lg hover:bg-primary-dark transition-colors text-sm flex items-center gap-2"
+              >
+                <Check className="w-4 h-4" />
+                Save
+              </button>
+            </div>
+            <div className="mt-4 p-3 bg-gray-900/50 rounded-lg">
+              <p className="text-xs text-gray-400">
+                <span className="text-primary font-semibold">Current setting:</span> {disclaimerTimerSeconds} seconds
+                {disclaimerTimerSeconds === 0 && <span className="text-green-400 ml-2">(Instant - no wait)</span>}
+                {disclaimerTimerSeconds === 3 && <span className="text-yellow-400 ml-2">(Default)</span>}
+              </p>
+            </div>
+            <div className="mt-4 text-xs text-gray-500">
+              <p className="mb-2"><span className="text-gray-400">Quick presets:</span></p>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setTimerInput('0')} className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400">0s</button>
+                <button onClick={() => setTimerInput('1')} className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400">1s</button>
+                <button onClick={() => setTimerInput('3')} className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400">3s</button>
+                <button onClick={() => setTimerInput('5')} className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400">5s</button>
+                <button onClick={() => setTimerInput('10')} className="px-2 py-1 bg-gray-800 hover:bg-gray-700 rounded text-gray-400">10s</button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -1796,10 +1911,11 @@ function AdminPage() {
    ============================ */
 
 function Router() {
-  const { page, isAdminAuthenticated, navigate, loginAdmin } = useApp();
+  const { page, isAdminAuthenticated, navigate, loginAdmin, disclaimerTimerSeconds } = useApp();
   const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   useEffect(() => {
     const path = window.location.pathname;
@@ -1865,6 +1981,12 @@ function Router() {
 
   return (
     <div className="min-h-screen bg-[#0a0a12]">
+      {showDisclaimer && (
+        <DisclaimerPopup 
+          timerSeconds={disclaimerTimerSeconds} 
+          onClose={() => setShowDisclaimer(false)} 
+        />
+      )}
       <Navbar />
       <main>
         {page === 'home' && <HomePage />}
